@@ -1,0 +1,6 @@
+"Trolley car, in British English": TRAM
+"Group of people who work together": TEAM
+"Drinks like oolong and chai": TEAS
+""___ of the d'Urbervilles" (Thomas Hardy Novel)": TESS
+"Disorderly situation": MESS
+"The top + bottom rows = A scientific unit, and what it measures": GRAM, MASS
