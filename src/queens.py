@@ -129,24 +129,19 @@ class QueensGame():
         for region in self.regions.values():
             constraints += [cp.sum([crowns[i, j] for (i, j) in region]) == 1]
         ## Two crowns cannot touch each other, not even diagonally
+        last = self.n - 1
         for i in range(self.n):
+            down = i + 1
             for j in range(self.n):
-                if i != 0:
-                    constraints += [crowns[i, j] + crowns[i - 1, j] <= 1]          # up
-                    if j != 0:
-                        constraints += [crowns[i, j] + crowns[i - 1, j - 1] <= 1]  # up-left
-                    if j != self.n - 1:
-                        constraints += [crowns[i, j] + crowns[i - 1, j + 1] <= 1]  # up-right  
-                if i != self.n - 1:
-                    constraints += [crowns[i, j] + crowns[i + 1, j] <= 1]          # down
-                    if j != 0:
-                        constraints += [crowns[i, j] + crowns[i + 1, j - 1] <= 1]  # down-left
-                    if j != self.n - 1:
-                        constraints += [crowns[i, j] + crowns[i + 1, j + 1] <= 1]  # down-right
-                if j != 0:
-                    constraints += [crowns[i, j] + crowns[i, j - 1] <= 1]          # left
-                if j != self.n - 1:
-                    constraints += [crowns[i, j] + crowns[i, j + 1] <= 1]          # right
+                left, right = j - 1, j + 1
+                if (i < last):
+                    constraints += [crowns[i, j] + crowns[down, j] <= 1]
+                    if (j > 0):
+                        constraints += [crowns[i, j] + crowns[down, left] <= 1]
+                    if (j < last):
+                        constraints += [crowns[i, j] + crowns[down, right] <= 1]
+                if (j < last):
+                    constraints += [crowns[i, j] + crowns[i, right] <= 1]
 
         problem = cp.Problem(cp.Minimize(0), constraints)
         start_time = time.time()
