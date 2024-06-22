@@ -1,0 +1,6 @@
+"Food like mulligatawny or gumbo": STEW
+"Place in the overhead bin, maybe": STOW
+"Like a snail, especially when compared to a cheetah": SLOW
+"Opening in a schedule": SLOT
+"Black buildup in a chimney": SOOT
+"The top + bottom rows = Two parts of a flower (one underground, one above ground)": STEM, ROOT

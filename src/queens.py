@@ -1,9 +1,12 @@
 import cv2
 import cvxpy as cp
 import numpy as np
+import time
 
 class QueensGame():
     def __init__(self, screenshot_path: str):
+        print("Extracting board from screenshot...")
+        start_time = time.time()
         board_bw = self._find_board_bounding_box(screenshot_path)
         self._compute_game_size(board_bw)
         self._compute_border_length(board_bw)
@@ -11,6 +14,7 @@ class QueensGame():
         self._compute_boundary_width(board_bw)
         self._parse_squares()
         self._load_crown()
+        print("Extracted in {:.4f} seconds".format(time.time() - start_time))
 
     def _find_board_bounding_box(self, screenshot_path: str) -> np.ndarray:
         img_color = cv2.imread(screenshot_path)
@@ -18,8 +22,8 @@ class QueensGame():
         img_bw = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)[1]
         largest_square = self._find_largest_square(img_gray)
         x, y, w, h = cv2.boundingRect(largest_square)
-        self.board_color = img_color[(y + 1):(y + h -1), (x + 1):(x + w - 1)]
-        board_bw = img_bw[(y + 1):(y + h -1), (x + 1):(x + w - 1)]
+        self.board_color = img_color[(y + 1):(y + h - 1), (x + 1):(x + w - 1)]
+        board_bw = img_bw[(y + 1):(y + h - 1), (x + 1):(x + w - 1)]
         board_bw = (board_bw.astype(float) / float(255)).astype(int)
         return board_bw
     
@@ -55,11 +59,13 @@ class QueensGame():
     def _compute_square_length(self, board_bw: np.ndarray):
         # Compute the length of the side of one of the board's squares
         max_length = 0
+        lengths = []
         for i in range(self.board_border_length, len(board_bw) - self.board_border_length):
             row = board_bw[i]
             idx_pairs = np.where(np.diff(np.hstack(([False], row==1,[False]))))[0].reshape(-1,2)
             if len(idx_pairs) != 0:
                 curr_max = np.max(np.diff(idx_pairs, axis=1))
+                lengths.append(curr_max)
                 if curr_max > max_length:
                     max_length = curr_max
         for i in range(self.board_border_length, len(board_bw) - self.board_border_length):
@@ -67,6 +73,7 @@ class QueensGame():
             idx_pairs = np.where(np.diff(np.hstack(([False], col==1,[False]))))[0].reshape(-1,2)
             if len(idx_pairs) != 0:
                 curr_max = np.max(np.diff(idx_pairs, axis=1))
+                lengths.append(curr_max)
                 if curr_max > max_length:
                     max_length = curr_max
         self.square_len = max_length
@@ -88,7 +95,7 @@ class QueensGame():
                 curr_min = np.min(np.diff(idx_pairs, axis=1))
                 if curr_min < min_length:
                     min_length = curr_min
-        self.boundary_width = min_length        
+        self.boundary_width = min_length
 
     def _parse_squares(self):
         # Find each square, its color, and create the regions
@@ -97,7 +104,7 @@ class QueensGame():
         start_idx = np.array([self.board_border_length, self.board_border_length])
         for i in range(self.n):
             for j in range(self.n):
-                upper_left = start_idx + np.array([i, j]) * (self.boundary_width + self.square_len)
+                upper_left = start_idx + np.array([i, j]) * (self.square_len + self.boundary_width)
                 center = upper_left + (self.square_len // 2).astype(int)
                 color = tuple(self.board_color[*center])
                 if color not in self.regions:
@@ -111,6 +118,7 @@ class QueensGame():
         self.crown_mask = (self.crown_mask / float(255)).astype(int)
 
     def solve(self, save_to_path: str):
+        print("Solving Queens...")
         crowns = cp.Variable(shape=(self.n, self.n), boolean=True)
 
         # 1 Crown per column
@@ -141,8 +149,11 @@ class QueensGame():
                     constraints += [crowns[i, j] + crowns[i, j + 1] <= 1]          # right
 
         problem = cp.Problem(cp.Minimize(0), constraints)
+        start_time = time.time()
         problem.solve()
+        print("Solved in {:.4f} seconds".format(time.time() - start_time))
         self._save_solution(save_to_path, crowns.value)
+        print("Solution saved to " + save_to_path)
 
     def _save_solution(self, save_to_path: str, crown_locations: np.ndarray):
         solution = self.board_color.copy()

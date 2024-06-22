@@ -1,0 +1,6 @@
+"Type of ancient alphabetic character": RUNE
+"Stepladder component": RUNG
+"Sounded, as a bell": RANG
+"Group of friends": GANG
+"Large percussion instrument that typically hangs vertically": GONG
+"The top + bottom rows = Two different words meaning "musical piece"": TUNE, SONG
