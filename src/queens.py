@@ -36,25 +36,19 @@ class QueensGame():
             if len(approx) == 4:
                 _, _, w, h = cv2.boundingRect(cnt)
                 ratio = float(w)/h
-                if (ratio >= 0.9 and ratio <= 1.1) and (float(w)/len(img_gray) > 0.01):
+                if (ratio >= 0.9 and ratio <= 1.1):
                     if w > max_width:
                         max_width = w
                         largest_square = cnt
         return largest_square
 
     def _compute_game_size(self, board_bw: np.ndarray):
-        # Compute the size of the game (an n x n game has size `n`)  # TODO: Check if the game is ever not square (i.e., m x n is possible)
+        # Compute the size of the game (an n x n game has size `n`)
         self.n = np.unique(np.diff(np.round(np.mean(board_bw, axis=1))), return_counts=True)[1][0]
 
     def _compute_border_length(self, board_bw: np.ndarray):
         # Compute length of the board's border
-        col_mean = np.round(np.mean(board_bw, axis=0))
-        self.board_border_length = 0
-        for i in range(len(col_mean)):
-            if col_mean[i] == 0:
-                self.board_border_length += 1
-            else:
-                break
+        self.board_border_length = np.where(np.round(np.mean(board_bw, axis=0)) == 1)[0][0]
 
     def _compute_square_length(self, board_bw: np.ndarray):
         # Compute the length of the side of one of the board's squares
