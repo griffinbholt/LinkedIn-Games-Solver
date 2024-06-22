@@ -27,7 +27,7 @@ def main():
 
         # Run the Pinpoint game solver
         pinpoint_game = PinpointGame(api_key=api_key)
-        pinpoint_game.run_openai_method2()
+        pinpoint_game.run_openai_method1()
     elif args.game == "queens":
         # Command-line requirements for Queens
         assert args.input_file is not None, "You must provide a filepath to a screenshot of the Queens board"

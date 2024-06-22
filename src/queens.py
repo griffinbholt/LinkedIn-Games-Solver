@@ -107,6 +107,7 @@ class QueensGame():
 
     def _load_crown(self):
         self.crown_mask = cv2.imread("./images/crown.png")
+        self.crown_mask = cv2.resize(self.crown_mask, (self.square_len - self.boundary_width, self.square_len - self.boundary_width))
         self.crown_mask = (self.crown_mask / float(255)).astype(int)
 
     def solve(self, save_to_path: str):
@@ -150,7 +151,7 @@ class QueensGame():
                 if crown_locations[i, j]:
                     start_idx = self.squares[i, j]
                     end_idx = self.squares[i, j] + self.square_len
-                    solution[(start_idx[0]):(end_idx[0] - 2), (start_idx[1]):(end_idx[1] - 2)] = solution[(start_idx[0]):(end_idx[0] - 2), (start_idx[1]):(end_idx[1] - 2)] * self.crown_mask
+                    solution[(start_idx[0]):(end_idx[0] - self.boundary_width), (start_idx[1]):(end_idx[1] - self.boundary_width)] = solution[(start_idx[0]):(end_idx[0] - self.boundary_width), (start_idx[1]):(end_idx[1] - self.boundary_width)] * self.crown_mask
         cv2.imwrite(save_to_path, solution)
 
 #### Alternate Solution
